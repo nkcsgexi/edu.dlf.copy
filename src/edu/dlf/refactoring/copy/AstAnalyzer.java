@@ -1,6 +1,8 @@
 package edu.dlf.refactoring.copy;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
@@ -9,6 +11,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 
 public abstract class AstAnalyzer {
 
@@ -79,4 +82,27 @@ public abstract class AstAnalyzer {
 				nodes.add(node);
 		}
 	}	
+	protected Function<ASTNode, ASTNode> getStructuralNode(
+			final StructuralPropertyDescriptor descriptor) {
+		return new Function<ASTNode, ASTNode>() {
+			@Override
+			public ASTNode apply(ASTNode parent) {
+				Object result = parent.getStructuralProperty(descriptor);
+				return (ASTNode)result;
+		}};
+	}
+	
+	protected Function<ASTNode, Stream<ASTNode>> getStructuralNodeList(
+			final StructuralPropertyDescriptor descriptor) {
+		return new Function<ASTNode, Stream<ASTNode>>() {
+			@Override
+			public Stream<ASTNode> apply(ASTNode parent) {
+				Object result = parent.getStructuralProperty(descriptor);
+				if(result instanceof List) {
+					return ((List<ASTNode>)result).stream();
+				}else {
+					return Stream.of((ASTNode)result);
+				}
+		}};
+	}
 }

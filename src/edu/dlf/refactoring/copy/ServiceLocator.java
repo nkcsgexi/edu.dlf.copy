@@ -9,17 +9,30 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
+import edu.dlf.refactoring.copy.Design.IApiCallBuilder;
+import edu.dlf.refactoring.copy.Design.IApiParameterBuilder;
+import edu.dlf.refactoring.copy.Design.ICodeSnippetBuilder;
+import edu.dlf.refactoring.copy.snippet.ApiCallBuilder;
+import edu.dlf.refactoring.copy.snippet.ApiParameterBuilder;
+import edu.dlf.refactoring.copy.snippet.CodeSnippetBuilder;
+
 public class ServiceLocator extends AbstractModule{
 
-	private static String PATTERN = "%d [%p|%c|%C{1}] %m%n";
-	private static String desktop = "/home/xige/Desktop/";
+	private final static String PATTERN = "%d [%p|%c|%C{1}] %m%n";
+	private final static String desktop = "/home/xige/Desktop/";
+	private final static AbstractModule _instance = new ServiceLocator();
+	private final static Injector injector = Guice.createInjector(_instance);
 	
 	@Override
 	protected void configure() {
-		
+		bind(ICodeSnippetBuilder.class).to(CodeSnippetBuilder.class).in(Singleton.class);
+		bind(IApiCallBuilder.class).to(ApiCallBuilder.class).in(Singleton.class);
+		bind(IApiParameterBuilder.class).to(ApiParameterBuilder.class).in(Singleton.class);
 	}
 	
 	@Provides
@@ -51,5 +64,8 @@ public class ServiceLocator extends AbstractModule{
 		fa.activateOptions();
 		return fa;
 	}
-
+	
+	public static <T> T ResolveType(Class T) {
+		return (T) injector.getInstance(T);
+	}
 }

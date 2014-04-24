@@ -12,24 +12,31 @@ import com.google.inject.Inject;
 import edu.dlf.refactoring.copy.AstAnalyzer;
 import edu.dlf.refactoring.copy.Design.IApiCall;
 import edu.dlf.refactoring.copy.Design.IApiCallBuilder;
+import edu.dlf.refactoring.copy.Design.IApiParameter;
+import edu.dlf.refactoring.copy.Design.IApiParameterBuilder;
 
 public class ApiCallBuilder extends AstAnalyzer implements IApiCallBuilder {
 
 	private final Logger logger;
+	private final IApiParameterBuilder builder;
 
 	@Inject
-	public ApiCallBuilder(Logger logger) {
+	public ApiCallBuilder(Logger logger, IApiParameterBuilder builder) {
 		this.logger = logger;
+		this.builder = builder;
 	}
 	
 	@Override
 	public IApiCall apply(ASTNode methodCall) {
-		ASTNode methodName = (ASTNode)methodCall.getStructuralProperty
+		final ASTNode methodName = (ASTNode)methodCall.getStructuralProperty
 			(MethodInvocation.NAME_PROPERTY);
-		Stream<ASTNode> args = ((List<ASTNode>)methodCall.getStructuralProperty
-			(MethodInvocation.ARGUMENTS_PROPERTY)).stream();
-	
-		return null;
+		final Stream<IApiParameter> arguments = ((List<ASTNode>)methodCall.
+			getStructuralProperty(MethodInvocation.ARGUMENTS_PROPERTY)).
+				stream().map(builder);
+		return new IApiCall() {
+			@Override
+			public Stream<IApiParameter> getAllParameters() {
+				return arguments;
+		}};
 	}
-
 }
