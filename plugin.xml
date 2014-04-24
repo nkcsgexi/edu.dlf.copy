@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="edu.dlf.refactoring.copy.ui.CopyCommandHandler"
+            id="edu.dlf.copy.command.runTests"
+            name="Run Test">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+            <menu
+               label="Smart Copy"
+               mnemonic="M"
+               id="edu.dlf.copy.menu">
+            <command
+                  commandId="edu.dlf.copy.command.runTests">
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+
+</plugin>
