@@ -12,7 +12,7 @@ public class Design {
 	
 	// General design
 	public interface INamable {String getName();}
-	
+	public interface IMergable {IMergable merge(IMergable another);}
 	
 	// From now on, design for copied snippets
 	public interface ICodeSnippetBuilder extends Function<String, ICodeSnippet>{
@@ -61,7 +61,7 @@ public class Design {
 		
 	}
 	// From now on, all for jar analysis
-	public interface IBinaryClass extends INamable{ 
+	public interface IBinaryClass extends INamable, IMergable{ 
 		Stream<IBinaryMethod> getMethods(); 
 		Stream<IBinaryField> getFields();
 	}
