@@ -10,6 +10,11 @@ import org.eclipse.jdt.core.dom.ASTNode;
 
 public class Design {
 	
+	// General design
+	public interface INamable {String getName();}
+	
+	
+	// From now on, design for copied snippets
 	public interface ICodeSnippetBuilder extends Function<String, ICodeSnippet>{
 		
 	}
@@ -40,9 +45,8 @@ public class Design {
 		
 	}
 	
-	public interface ISnippetDeclaredVariable {
+	public interface ISnippetDeclaredVariable extends INamable{
 		String getType();
-		String getIdentifier();
 	}
 	
 	public interface IApiParameter extends Supplier<String>{
@@ -56,4 +60,12 @@ public class Design {
 	public interface IParameterReplacableTester extends IReplacableTester{
 		
 	}
+	// From now on, all for jar analysis
+	public interface IBinaryClass extends INamable{ 
+		Stream<IBinaryMethod> getMethods(); 
+		Stream<IBinaryField> getFields();
+	}
+	public interface IBinaryMethod extends INamable{}
+	public interface IBinaryField extends INamable{}
+	
 }

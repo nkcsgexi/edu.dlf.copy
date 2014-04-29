@@ -26,7 +26,7 @@ public class VariableBuilder implements IDeclaredVariableBuilder{
 				return type.toString();
 			}
 			@Override
-			public String getIdentifier() {
+			public String getName() {
 				return name.toString();
 		}};
 	}
