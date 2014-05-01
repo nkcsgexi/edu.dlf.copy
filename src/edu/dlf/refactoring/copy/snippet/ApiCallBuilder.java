@@ -37,6 +37,10 @@ public class ApiCallBuilder extends AstAnalyzer implements IApiCallBuilder {
 			@Override
 			public Stream<IApiParameter> getAllParameters() {
 				return arguments;
-		}};
+			}
+			@Override
+			public String getName() {
+				return null;
+			}};
 	}
 }

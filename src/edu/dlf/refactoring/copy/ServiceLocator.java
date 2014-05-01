@@ -11,15 +11,23 @@ import org.apache.log4j.RollingFileAppender;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.name.Names;
 
 import edu.dlf.refactoring.copy.Design.IApiCallBuilder;
 import edu.dlf.refactoring.copy.Design.IApiParameterBuilder;
 import edu.dlf.refactoring.copy.Design.ICodeSnippetBuilder;
+import edu.dlf.refactoring.copy.Design.IDeclaredVariableBuilder;
+import edu.dlf.refactoring.copy.Design.IParameterReplacableTester;
+import edu.dlf.refactoring.copy.Design.ISearchable;
+import edu.dlf.refactoring.copy.jar.BinaryClassesRepository;
 import edu.dlf.refactoring.copy.snippet.ApiCallBuilder;
 import edu.dlf.refactoring.copy.snippet.ApiParameterBuilder;
 import edu.dlf.refactoring.copy.snippet.CodeSnippetBuilder;
+import edu.dlf.refactoring.copy.snippet.ParameterTester;
+import edu.dlf.refactoring.copy.snippet.VariableBuilder;
 
 public class ServiceLocator extends AbstractModule{
 
@@ -33,6 +41,10 @@ public class ServiceLocator extends AbstractModule{
 		bind(ICodeSnippetBuilder.class).to(CodeSnippetBuilder.class).in(Singleton.class);
 		bind(IApiCallBuilder.class).to(ApiCallBuilder.class).in(Singleton.class);
 		bind(IApiParameterBuilder.class).to(ApiParameterBuilder.class).in(Singleton.class);
+		bind(IDeclaredVariableBuilder.class).to(VariableBuilder.class).in(Singleton.class);
+		bind(IParameterReplacableTester.class).to(ParameterTester.class).in(Singleton.class);
+		bind(ISearchable.class).annotatedWith(Names.named("binary")).to(BinaryClassesRepository.class);
+		bindConstant().annotatedWith(Names.named("jar")).to("/home/xige/workspace/edu.dlf.refactoring.copy/lib/");
 	}
 	
 	@Provides
@@ -67,5 +79,9 @@ public class ServiceLocator extends AbstractModule{
 	
 	public static <T> T ResolveType(Class T) {
 		return (T) injector.getInstance(T);
+	}
+	
+	public static <T> T ResolveType(Class T, String name) {
+		return (T)injector.getInstance(Key.get(T, Names.named(name)));
 	}
 }

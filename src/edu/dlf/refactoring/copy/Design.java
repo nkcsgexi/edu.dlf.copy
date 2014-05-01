@@ -14,6 +14,12 @@ public class Design {
 	public interface INamable {String getName();}
 	public interface IMergable {IMergable merge(IMergable another);}
 	
+	public interface ISearchable {Stream<ISearchResult> search(ISearchQuery query);}
+	public interface ISearchQuery {String getQueryString();}
+	public interface ISearchResult {}
+	
+	
+	
 	// From now on, design for copied snippets
 	public interface ICodeSnippetBuilder extends Function<String, ICodeSnippet>{
 		
@@ -37,13 +43,10 @@ public class Design {
 		Stream<ISnippetDeclaredVariable> getDeclaredVariables();
 	}
 	
-	public interface IApiCall {
+	public interface IApiCall extends INamable{
 		Stream<IApiParameter> getAllParameters();
 	}
 	
-	public interface IApiMethodName {
-		
-	}
 	
 	public interface ISnippetDeclaredVariable extends INamable{
 		String getType();
@@ -61,11 +64,12 @@ public class Design {
 		
 	}
 	// From now on, all for jar analysis
-	public interface IBinaryClass extends INamable, IMergable{ 
+	public interface IBinaryClass extends INamable, IMergable, ISearchable, 
+			ISearchResult{ 
 		Stream<IBinaryMethod> getMethods(); 
 		Stream<IBinaryField> getFields();
 	}
-	public interface IBinaryMethod extends INamable{}
-	public interface IBinaryField extends INamable{}
+	public interface IBinaryMethod extends INamable, ISearchResult{}
+	public interface IBinaryField extends INamable, ISearchResult{}
 	
 }
