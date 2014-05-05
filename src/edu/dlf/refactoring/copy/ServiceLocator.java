@@ -20,13 +20,13 @@ import edu.dlf.refactoring.copy.Design.IApiCallBuilder;
 import edu.dlf.refactoring.copy.Design.IApiParameterBuilder;
 import edu.dlf.refactoring.copy.Design.ICodeSnippetBuilder;
 import edu.dlf.refactoring.copy.Design.IDeclaredVariableBuilder;
-import edu.dlf.refactoring.copy.Design.IParameterReplacableTester;
+import edu.dlf.refactoring.copy.Design.IExpressionUpdatedNodesCollecter;
 import edu.dlf.refactoring.copy.Design.ISearchable;
 import edu.dlf.refactoring.copy.jar.BinaryClassesRepository;
 import edu.dlf.refactoring.copy.snippet.ApiCallBuilder;
 import edu.dlf.refactoring.copy.snippet.ApiParameterBuilder;
 import edu.dlf.refactoring.copy.snippet.CodeSnippetBuilder;
-import edu.dlf.refactoring.copy.snippet.ParameterTester;
+import edu.dlf.refactoring.copy.snippet.ExpressionAnalyzer;
 import edu.dlf.refactoring.copy.snippet.VariableBuilder;
 
 public class ServiceLocator extends AbstractModule{
@@ -42,14 +42,14 @@ public class ServiceLocator extends AbstractModule{
 		bind(IApiCallBuilder.class).to(ApiCallBuilder.class).in(Singleton.class);
 		bind(IApiParameterBuilder.class).to(ApiParameterBuilder.class).in(Singleton.class);
 		bind(IDeclaredVariableBuilder.class).to(VariableBuilder.class).in(Singleton.class);
-		bind(IParameterReplacableTester.class).to(ParameterTester.class).in(Singleton.class);
+		bind(IExpressionUpdatedNodesCollecter.class).to(ExpressionAnalyzer.class).in(Singleton.class);
 		bind(ISearchable.class).annotatedWith(Names.named("binary")).to(BinaryClassesRepository.class);
 		bindConstant().annotatedWith(Names.named("jar")).to("/home/xige/workspace/edu.dlf.refactoring.copy/lib/");
 	}
 	
 	@Provides
 	@Singleton
-	private Logger GetLogger() throws Exception {
+	private Logger GetFullLogger() throws Exception {
 		Logger.getRootLogger().getLoggerRepository().resetConfiguration();
 		Logger.getRootLogger().addAppender(createConsoleAppender());
 		Logger.getRootLogger().addAppender(createConsoleLogFileAppender());

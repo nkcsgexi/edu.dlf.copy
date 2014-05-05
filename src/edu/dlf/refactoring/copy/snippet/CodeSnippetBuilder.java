@@ -17,6 +17,7 @@ import edu.dlf.refactoring.copy.Design.ICodeSnippet;
 import edu.dlf.refactoring.copy.Design.ICodeSnippetBuilder;
 import edu.dlf.refactoring.copy.Design.IDeclaredVariableBuilder;
 import edu.dlf.refactoring.copy.Design.ISnippetDeclaredVariable;
+import edu.dlf.refactoring.copy.Design.IUpdatedNodesContainer;
 
 public class CodeSnippetBuilder extends AstAnalyzer implements ICodeSnippetBuilder{
 
@@ -55,7 +56,12 @@ public class CodeSnippetBuilder extends AstAnalyzer implements ICodeSnippetBuild
 			@Override
 			public Stream<ISnippetDeclaredVariable> getDeclaredVariables() {
 				return variables;
-		}};
+			}
+			@Override
+			public Stream<ASTNode> get() {
+				return getAllCalls().flatMap(IUpdatedNodesContainer::get).
+					distinct();
+			}};
 	}
 
 	private Stream<ISnippetDeclaredVariable> createVariables(ASTNode s) {

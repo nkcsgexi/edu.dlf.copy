@@ -1,9 +1,14 @@
 package edu.dlf.refactoring.copy.ui;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.jdt.core.dom.ASTNode;
 
 import edu.dlf.refactoring.copy.Design.ICodeSnippet;
 import edu.dlf.refactoring.copy.Design.ICodeSnippetBuilder;
@@ -17,10 +22,14 @@ public class CopyCommandHandler extends AbstractHandler {
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		ICodeSnippet snippet = builder.apply("method(d);");
-		String text = snippet.getAllCalls().findFirst().get().getAllParameters().
-			findFirst().get().get();
-		logger.info(text);
+		testSimple1();
 		return null;
+	}
+	
+	private void testSimple1() {
+		ICodeSnippet snippet = builder.apply("method(d);");
+		List<ASTNode> list = snippet.get().collect(Collectors.toList());
+		Assert.isTrue(list.size() == 1);
+		Assert.isTrue(list.get(0).toString().equals("d"));
 	}
 }

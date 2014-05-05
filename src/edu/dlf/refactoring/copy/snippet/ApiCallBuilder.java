@@ -14,16 +14,21 @@ import edu.dlf.refactoring.copy.Design.IApiCall;
 import edu.dlf.refactoring.copy.Design.IApiCallBuilder;
 import edu.dlf.refactoring.copy.Design.IApiParameter;
 import edu.dlf.refactoring.copy.Design.IApiParameterBuilder;
+import edu.dlf.refactoring.copy.Design.IExpressionUpdatedNodesCollecter;
+import edu.dlf.refactoring.copy.Design.IUpdatedNodesContainer;
 
 public class ApiCallBuilder extends AstAnalyzer implements IApiCallBuilder {
 
 	private final Logger logger;
 	private final IApiParameterBuilder builder;
+	private final IExpressionUpdatedNodesCollecter expAnalyzer;
 
 	@Inject
-	public ApiCallBuilder(Logger logger, IApiParameterBuilder builder) {
+	public ApiCallBuilder(Logger logger, IApiParameterBuilder builder, 
+			IExpressionUpdatedNodesCollecter expAnalyzer) {
 		this.logger = logger;
 		this.builder = builder;
+		this.expAnalyzer = expAnalyzer;
 	}
 	
 	@Override
@@ -33,14 +38,20 @@ public class ApiCallBuilder extends AstAnalyzer implements IApiCallBuilder {
 		final Stream<IApiParameter> arguments = ((List<ASTNode>)methodCall.
 			getStructuralProperty(MethodInvocation.ARGUMENTS_PROPERTY)).
 				stream().map(builder);
+		final ASTNode express = (ASTNode)methodCall.getStructuralProperty
+			(MethodInvocation.EXPRESSION_PROPERTY);
+		final Stream<ASTNode> otherNodes = express == null ? Stream.empty() : this.
+			expAnalyzer.apply(express);
+		
 		return new IApiCall() {
 			@Override
 			public Stream<IApiParameter> getAllParameters() {
 				return arguments;
 			}
 			@Override
-			public String getName() {
-				return null;
+			public Stream<ASTNode> get() {
+				return Stream.concat(otherNodes, getAllParameters().flatMap
+					(IUpdatedNodesContainer::get)).distinct();
 			}};
 	}
 }

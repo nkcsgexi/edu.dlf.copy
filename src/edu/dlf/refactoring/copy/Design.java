@@ -2,7 +2,6 @@ package edu.dlf.refactoring.copy;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -18,51 +17,38 @@ public class Design {
 	public interface ISearchQuery {String getQueryString();}
 	public interface ISearchResult {}
 	
-	
-	
 	// From now on, design for copied snippets
-	public interface ICodeSnippetBuilder extends Function<String, ICodeSnippet>{
-		
-	}
+	public interface ICodeSnippetBuilder extends Function<String, ICodeSnippet>{}
 	
-	public interface IApiCallBuilder extends Function<ASTNode, IApiCall>{
-		
-	}
+	public interface IApiCallBuilder extends Function<ASTNode, IApiCall>{}
+	
+	public interface IUpdatedNodesContainer extends Supplier<Stream<ASTNode>> {}
+	
+	public interface IExpressionUpdatedNodesCollecter extends 
+		Function<ASTNode, Stream<ASTNode>>{}
 	
 	public interface IApiParameterBuilder extends Function<ASTNode, 
-		IApiParameter> {
-	}
+		IApiParameter> {}
 	
 	public interface IDeclaredVariableBuilder extends BiFunction<ASTNode, ASTNode, 
-		ISnippetDeclaredVariable> {
-		
-	}
+		ISnippetDeclaredVariable> {}
 	
-	public interface ICodeSnippet {
+	////
+	public interface ICodeSnippet extends IUpdatedNodesContainer{
 		Stream<IApiCall> getAllCalls();
 		Stream<ISnippetDeclaredVariable> getDeclaredVariables();
 	}
 	
-	public interface IApiCall extends INamable{
+	public interface IApiCall extends IUpdatedNodesContainer{
 		Stream<IApiParameter> getAllParameters();
 	}
 	
+	public interface IApiParameter extends IUpdatedNodesContainer{}
 	
 	public interface ISnippetDeclaredVariable extends INamable{
 		String getType();
 	}
 	
-	public interface IApiParameter extends Supplier<String>{
-		boolean isReplacable();
-	}
-	
-	public interface IReplacableTester extends Predicate<ASTNode> {
-		
-	}
-	
-	public interface IParameterReplacableTester extends IReplacableTester{
-		
-	}
 	// From now on, all for jar analysis
 	public interface IBinaryClass extends INamable, IMergable, ISearchable, 
 			ISearchResult{ 
