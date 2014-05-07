@@ -21,12 +21,12 @@ public class CopyCommandHandler extends AbstractHandler {
 		testSimple1();
 		testSimple2();
 		testSimple3();
+		testSimple4();
 		return null;
 	}
 	
 	private void testSimple1() {
 		IIntegrationInforContainer snippet = builder.apply("method(d);");
-		logger.info(snippet.getImportClues().count());
 		Assert.isTrue(snippet.getImportClues().count() == 1);
 		Assert.isTrue(snippet.getToAdaptNodes().count() == 1);
 		Assert.isTrue(snippet.getToAdaptNodes().findFirst().get().getNode().
@@ -35,7 +35,7 @@ public class CopyCommandHandler extends AbstractHandler {
 	
 	private void testSimple2() {
 		IIntegrationInforContainer snippet = builder.apply("int d;");
-		Assert.isTrue(snippet.getToAdaptNodes().count()== 1);
+		Assert.isTrue(snippet.getToAdaptNodes().count() == 1);
 		Assert.isTrue(snippet.getToAdaptNodes().findFirst().get().getNode().
 			toString().equals("d"));
 		Assert.isTrue(snippet.getImportClues().count() == 0);
@@ -51,6 +51,16 @@ public class CopyCommandHandler extends AbstractHandler {
 			toString().equals("println")));
 		Assert.isTrue(snippet.getImportClues().anyMatch(c -> c.getNode().
 			toString().equals("System.out")));
+	}
+	
+	private void testSimple4() {
+		IIntegrationInforContainer snippet = builder.apply("MyType a;");
+		Assert.isTrue(snippet.getToAdaptNodes().count() == 1);
+		Assert.isTrue(snippet.getToAdaptNodes().findFirst().get().getNode().
+			toString().equals("a"));
+		Assert.isTrue(snippet.getImportClues().count() == 1);
+		Assert.isTrue(snippet.getImportClues().findFirst().get().getNode().
+			toString().equals("MyType"));
 	}
 	
 }
