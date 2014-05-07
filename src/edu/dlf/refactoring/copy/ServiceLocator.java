@@ -16,18 +16,15 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
-import edu.dlf.refactoring.copy.Design.IApiCallBuilder;
-import edu.dlf.refactoring.copy.Design.IApiParameterBuilder;
 import edu.dlf.refactoring.copy.Design.ICodeSnippetBuilder;
-import edu.dlf.refactoring.copy.Design.IDeclaredVariableBuilder;
-import edu.dlf.refactoring.copy.Design.IExpressionUpdatedNodesCollecter;
+import edu.dlf.refactoring.copy.Design.IIntegrationInforCollector;
 import edu.dlf.refactoring.copy.Design.ISearchable;
 import edu.dlf.refactoring.copy.jar.BinaryClassesRepository;
-import edu.dlf.refactoring.copy.snippet.ApiCallBuilder;
-import edu.dlf.refactoring.copy.snippet.ApiParameterBuilder;
+import edu.dlf.refactoring.copy.snippet.ApiCallCollector;
 import edu.dlf.refactoring.copy.snippet.CodeSnippetBuilder;
-import edu.dlf.refactoring.copy.snippet.ExpressionAnalyzer;
-import edu.dlf.refactoring.copy.snippet.VariableBuilder;
+import edu.dlf.refactoring.copy.snippet.ExpressionCollector;
+import edu.dlf.refactoring.copy.snippet.TypeIntegrationInforCollector;
+import edu.dlf.refactoring.copy.snippet.VariableDeclarationCollector;
 
 public class ServiceLocator extends AbstractModule{
 
@@ -39,10 +36,11 @@ public class ServiceLocator extends AbstractModule{
 	@Override
 	protected void configure() {
 		bind(ICodeSnippetBuilder.class).to(CodeSnippetBuilder.class).in(Singleton.class);
-		bind(IApiCallBuilder.class).to(ApiCallBuilder.class).in(Singleton.class);
-		bind(IApiParameterBuilder.class).to(ApiParameterBuilder.class).in(Singleton.class);
-		bind(IDeclaredVariableBuilder.class).to(VariableBuilder.class).in(Singleton.class);
-		bind(IExpressionUpdatedNodesCollecter.class).to(ExpressionAnalyzer.class).in(Singleton.class);
+		bind(IIntegrationInforCollector.class).annotatedWith(Names.named("invocation")).to(ApiCallCollector.class).in(Singleton.class);
+		bind(IIntegrationInforCollector.class).annotatedWith(Names.named("parameter")).to(ExpressionCollector.class).in(Singleton.class);
+		bind(IIntegrationInforCollector.class).annotatedWith(Names.named("declaration")).to(VariableDeclarationCollector.class).in(Singleton.class);
+		bind(IIntegrationInforCollector.class).annotatedWith(Names.named("expression")).to(ExpressionCollector.class).in(Singleton.class);
+		bind(IIntegrationInforCollector.class).annotatedWith(Names.named("type")).to(TypeIntegrationInforCollector.class).in(Singleton.class);;
 		bind(ISearchable.class).annotatedWith(Names.named("binary")).to(BinaryClassesRepository.class);
 		bindConstant().annotatedWith(Names.named("jar")).to("/home/xige/workspace/edu.dlf.refactoring.copy/lib/");
 	}

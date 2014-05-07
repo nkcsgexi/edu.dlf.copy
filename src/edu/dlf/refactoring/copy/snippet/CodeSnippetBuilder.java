@@ -1,73 +1,54 @@
 package edu.dlf.refactoring.copy.snippet;
 
-import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 import edu.dlf.refactoring.copy.AstAnalyzer;
-import edu.dlf.refactoring.copy.Design.IApiCall;
-import edu.dlf.refactoring.copy.Design.IApiCallBuilder;
-import edu.dlf.refactoring.copy.Design.ICodeSnippet;
 import edu.dlf.refactoring.copy.Design.ICodeSnippetBuilder;
-import edu.dlf.refactoring.copy.Design.IDeclaredVariableBuilder;
-import edu.dlf.refactoring.copy.Design.ISnippetDeclaredVariable;
-import edu.dlf.refactoring.copy.Design.IUpdatedNodesContainer;
+import edu.dlf.refactoring.copy.Design.IIntegrationInforCollector;
+import edu.dlf.refactoring.copy.Design.IIntegrationInforContainer;
+import edu.dlf.refactoring.copy.Design.IMergable;
 
 public class CodeSnippetBuilder extends AstAnalyzer implements ICodeSnippetBuilder{
 
-	private final IApiCallBuilder callBuilder;
 	private final Logger logger;
-	private final IDeclaredVariableBuilder variableBuilder;
-	private final Function<ASTNode, Stream<ASTNode>> getFragmentsFunc;
-	private final Function<ASTNode, ASTNode> getNameFunc;
+	private final IIntegrationInforCollector callCollector;
+	private final IIntegrationInforCollector variableCollector;
 
 	@Inject
-	public CodeSnippetBuilder(Logger logger, 
-			IApiCallBuilder callBuilder, 
-			IDeclaredVariableBuilder variableBuilder) {
+	public CodeSnippetBuilder(
+			Logger logger, 
+			@Named("invocation") IIntegrationInforCollector callCollector, 
+			@Named("declaration") IIntegrationInforCollector variableCollector) {
 		this.logger = logger;
-		this.callBuilder = callBuilder;
-		this.variableBuilder = variableBuilder;
-		this.getFragmentsFunc = getStructuralNodeList(VariableDeclarationStatement.
-			FRAGMENTS_PROPERTY);
-		this.getNameFunc = getStructuralNode(VariableDeclarationFragment.
-			NAME_PROPERTY);
+		this.callCollector = callCollector;
+		this.variableCollector = variableCollector;
 	}
 	
 	@Override
-	public ICodeSnippet apply(String source) {
+	public IIntegrationInforContainer apply(String source) {
 		final ASTNode root = parseStatements(source);
-		final Stream<ISnippetDeclaredVariable> variables = getDescendants(root, 
-			s -> s.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT).flatMap
-				(this::createVariables);
-		final Stream<IApiCall> apiCalls = getDescendants(root, node -> node.
-			getNodeType() == ASTNode.METHOD_INVOCATION).map(callBuilder);
-		return new ICodeSnippet() {
-			@Override
-			public Stream<IApiCall> getAllCalls() {
-				return apiCalls;
-			}
-			@Override
-			public Stream<ISnippetDeclaredVariable> getDeclaredVariables() {
-				return variables;
-			}
-			@Override
-			public Stream<ASTNode> get() {
-				return getAllCalls().flatMap(IUpdatedNodesContainer::get).
-					distinct();
-			}};
-	}
-
-	private Stream<ISnippetDeclaredVariable> createVariables(ASTNode s) {
-		ASTNode type = (ASTNode)s.getStructuralProperty(VariableDeclarationStatement.
-			TYPE_PROPERTY);
-		Stream<ASTNode> names = getFragmentsFunc.apply(s).map(getNameFunc);	
-		return names.map(name -> variableBuilder.apply(type, name));
+		final List<IIntegrationInforContainer> variables = getDescendants(root, 
+			s -> s.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT).map
+				(variableCollector).collect(Collectors.toList());
+		final List<IIntegrationInforContainer> apiCalls = getDescendants(root, 
+			node -> node.getNodeType() == ASTNode.METHOD_INVOCATION).map(
+				callCollector).collect(Collectors.toList());
+		Optional<IMergable> vContainer = variables.stream().collect(Collectors.
+			reducing(IMergable::merge));
+		Optional<IMergable> cContainer = apiCalls.stream().collect(Collectors.
+			reducing(IMergable::merge));
+		IMergable vc = vContainer.isPresent() ? vContainer.get() : 
+			new NullIntegrationInforContainer(); 
+		IMergable cc = cContainer.isPresent() ? cContainer.get() : 
+			new NullIntegrationInforContainer();
+		return (IIntegrationInforContainer) vc.merge(cc);
 	}
 }
