@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 
 public abstract class AstAnalyzer {
 
-	protected ASTNode parseICompilationUnit(String code) {
+	public ASTNode parseICompilationUnit(String code) {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(code.toCharArray());
@@ -25,7 +25,7 @@ public abstract class AstAnalyzer {
 		return root;
 	}
 
-	protected ASTNode parseStatements(String source) {
+	public ASTNode parseStatements(String source) {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_STATEMENTS);
 		parser.setSource(source.toCharArray());
@@ -35,7 +35,7 @@ public abstract class AstAnalyzer {
 		return root;
 	}
 
-	protected ASTNode parseExpression(String source) {
+	public ASTNode parseExpression(String source) {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_EXPRESSION);
 		parser.setSource(source.toCharArray());
