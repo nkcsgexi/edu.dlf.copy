@@ -16,7 +16,7 @@ public class Design {
 	public interface ISearchResult {}
 	public interface IASTNodeContainer{ ASTNode getNode();}
 	
-	// From now on, design for copied snippets
+	// From now on, design for copied snippet
 	public interface ICodeSnippetBuilder extends Function<String, 
 		IIntegrationInforContainer>{}
 	
@@ -32,6 +32,14 @@ public class Design {
 	public interface IIntegrationInforCollector extends Function<ASTNode, 
 		IIntegrationInforContainer>{};
 		
+	// Contextual variables
+	public interface ITypeNamePair {ASTNode getType(); ASTNode getName();}	
+	public interface IContextualInfoContainer {
+		Stream<ITypeNamePair> getUnusedNodes();
+	}
+	public interface IContextualInfoCollector extends Function<ASTNode, 
+		IContextualInfoContainer>{}
+		
 	// From now on, all for jar analysis
 	public interface IBinaryClass extends INamable, IMergable, ISearchable, 
 			ISearchResult{ 
@@ -41,5 +49,4 @@ public class Design {
 	
 	public interface IBinaryMethod extends INamable, ISearchResult{}
 	public interface IBinaryField extends INamable, ISearchResult{}
-	
 }

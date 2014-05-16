@@ -105,4 +105,15 @@ public abstract class AstAnalyzer {
 				}
 		}};
 	}
+	
+	protected Function<Stream<ASTNode>, Stream<ASTNode>> 
+		getStructuralNodeListFromList(final StructuralPropertyDescriptor descriptor) {
+		return new Function<Stream<ASTNode>, Stream<ASTNode>>() {
+			@Override
+			public Stream<ASTNode> apply(Stream<ASTNode> list) {
+				Function<ASTNode, Stream<ASTNode>> func = 
+					getStructuralNodeList(descriptor);
+				return list.flatMap(func);
+		}};
+	}
 }

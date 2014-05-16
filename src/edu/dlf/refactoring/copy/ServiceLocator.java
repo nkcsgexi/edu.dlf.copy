@@ -17,8 +17,10 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
 import edu.dlf.refactoring.copy.Design.ICodeSnippetBuilder;
+import edu.dlf.refactoring.copy.Design.IContextualInfoCollector;
 import edu.dlf.refactoring.copy.Design.IIntegrationInforCollector;
 import edu.dlf.refactoring.copy.Design.ISearchable;
+import edu.dlf.refactoring.copy.context.UnusedNodesCollectorInClass;
 import edu.dlf.refactoring.copy.jar.BinaryClassesRepository;
 import edu.dlf.refactoring.copy.snippet.ApiCallCollector;
 import edu.dlf.refactoring.copy.snippet.CodeSnippetBuilder;
@@ -41,6 +43,7 @@ public class ServiceLocator extends AbstractModule{
 		bind(IIntegrationInforCollector.class).annotatedWith(Names.named("declaration")).to(VariableDeclarationCollector.class).in(Singleton.class);
 		bind(IIntegrationInforCollector.class).annotatedWith(Names.named("expression")).to(ExpressionCollector.class).in(Singleton.class);
 		bind(IIntegrationInforCollector.class).annotatedWith(Names.named("type")).to(TypeIntegrationInforCollector.class).in(Singleton.class);;
+		bind(IContextualInfoCollector.class).to(UnusedNodesCollectorInClass.class).in(Singleton.class);
 		bind(ISearchable.class).annotatedWith(Names.named("binary")).to(BinaryClassesRepository.class);
 		bindConstant().annotatedWith(Names.named("jar")).to("/home/xige/workspace/edu.dlf.refactoring.copy/lib/");
 	}
