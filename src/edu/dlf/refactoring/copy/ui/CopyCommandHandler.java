@@ -92,8 +92,12 @@ public class CopyCommandHandler extends AbstractHandler {
 		Assert.isTrue(container.getUnusedNodes().count() > 0);
 		Assert.isTrue(container.getUnusedNodes().filter(p -> p.getName().toString().
 			equals("event")).count() == 1);
+		Assert.isTrue(container.getUnusedNodes().filter(p -> p.getType().toString().
+			equals("ExecutionEvent")).count() == 1);
 		Assert.isTrue(container.getUnusedNodes().filter(p -> p.getName().toString().
 			equals("e")).count() == 1);
+		Assert.isTrue(container.getUnusedNodes().filter(p -> p.getType().toString().
+			equals("Exception")).count() == 1);
 		Assert.isTrue(container.getUnusedNodes().filter(p -> p.getName().toString().
 			equals("eventwhichdoesnotexist")).count() == 0);
 	}
